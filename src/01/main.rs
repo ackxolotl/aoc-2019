@@ -4,11 +4,17 @@ use std::io::Read;
 fn main() {
     let mut input = String::new();
 
-    File::open("./src/01/input.txt").unwrap().read_to_string(&mut input).unwrap();
+    File::open("./src/01/input.txt")
+        .unwrap()
+        .read_to_string(&mut input)
+        .unwrap();
 
     let module_masses: Vec<usize> = input.lines().map(|l| l.parse::<usize>().unwrap()).collect();
 
-    let fuel: usize = module_masses.iter().map(|x| (*x as i64 / 3 - 2) as usize).sum();
+    let fuel: usize = module_masses
+        .iter()
+        .map(|x| (*x as i64 / 3 - 2) as usize)
+        .sum();
 
     println!("Required fuel: {}", fuel);
 
