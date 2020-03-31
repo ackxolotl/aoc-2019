@@ -9,6 +9,11 @@ edition = "2018"
 [dependencies]
 
 
+[lib]
+name = "intcode"
+path = "src/intcode.rs"
+
+
 [[bin]]
 name = "01"
 path = "src/01/main.rs"

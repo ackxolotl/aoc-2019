@@ -1,6 +1,8 @@
 use std::fs::File;
 use std::io::Read;
 
+use intcode::Computer;
+
 fn main() {
     let mut input = String::new();
 
@@ -17,9 +19,11 @@ fn main() {
     tape[1] = 12;
     tape[2] = 2;
 
-    compute(&mut tape);
+    let mut computer = Computer::new(tape);
 
-    println!("Value at position 0: {}", tape[0]);
+    computer.compute();
+
+    println!("Output: {}", computer.get_output());
 
     tape = input
         .split(',')
@@ -33,43 +37,14 @@ fn main() {
             new_tape[1] = i;
             new_tape[2] = j;
 
-            compute(&mut new_tape);
+            let mut computer = Computer::new(new_tape);
 
-            if new_tape[0] == 19_690_720 {
+            computer.compute();
+
+            if computer.get_output() == 19_690_720 {
                 println!("Noun: {}, verb: {}, solution: {}", i, j, 100 * i + j);
                 break;
             }
         }
     }
-}
-
-fn compute(tape: &mut Vec<usize>) {
-    let mut current = 0;
-
-    loop {
-        let opcode = tape[current];
-
-        if opcode == 99 {
-            break;
-        }
-
-        let out = tape[current + 3];
-        let in1 = tape[current + 1];
-        let in2 = tape[current + 2];
-
-        match opcode {
-            1 => tape[out] = tape[in1] + tape[in2],
-            2 => tape[out] = tape[in1] * tape[in2],
-            _ => panic!("wrong opcode"),
-        };
-
-        current += 4;
-    }
-}
-
-#[test]
-fn compute_test() {
-    let mut vec = vec![1, 0, 0, 0, 99];
-    compute(&mut vec);
-    assert_eq!(vec![2, 0, 0, 0, 99], vec);
 }
