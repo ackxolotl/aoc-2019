@@ -11,9 +11,9 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let mut tape: Vec<usize> = input
+    let mut tape: Vec<i64> = input
         .split(',')
-        .map(|x| x.parse::<usize>().unwrap())
+        .map(|x| x.parse::<i64>().unwrap())
         .collect();
 
     tape[1] = 12;
@@ -23,11 +23,11 @@ fn main() {
 
     computer.compute();
 
-    println!("Output: {}", computer.get_output());
+    println!("Output: {}", computer.get_from_memory(0).unwrap());
 
     tape = input
         .split(',')
-        .map(|x| x.parse::<usize>().unwrap())
+        .map(|x| x.parse::<i64>().unwrap())
         .collect();
 
     for i in 0..=99 {
@@ -41,9 +41,9 @@ fn main() {
 
             computer.compute();
 
-            if computer.get_output() == 19_690_720 {
+            if computer.get_from_memory(0).unwrap() == 19_690_720 {
                 println!("Noun: {}, verb: {}, solution: {}", i, j, 100 * i + j);
-                break;
+                return;
             }
         }
     }
