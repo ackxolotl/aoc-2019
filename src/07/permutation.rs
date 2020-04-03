@@ -34,9 +34,7 @@ impl Iterator for Permutation {
                         self.state[i] as usize
                     };
 
-                    self.current[swap] ^= self.current[i];
-                    self.current[i] ^= self.current[swap];
-                    self.current[swap] ^= self.current[i];
+                    self.current.swap(swap, i);
 
                     self.state[i] += 1;
                     self.q += 1;
