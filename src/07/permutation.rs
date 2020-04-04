@@ -1,26 +1,44 @@
-pub struct Permutation {
-    current: [u8; 5],
-    state: [u8; 5],
+use std::marker::PhantomData;
+
+const MAX_SIZE: usize = 16;
+
+pub struct Permutation<'a, T: ?Sized, X> {
+    current: &'a mut T,
+    state: [u8; MAX_SIZE],
     q: usize,
+    _phantom: PhantomData<X>,
 }
 
-impl Permutation {
-    pub fn new(initial: [u8; 5]) -> Permutation {
+impl<'a, T, X> Permutation<'a, T, X>
+where
+    T: ToOwned + AsMut<[X]>,
+{
+    pub fn new(data: &'a mut T) -> Permutation<'a, T, X> {
+        assert!(
+            data.as_mut().len() <= MAX_SIZE,
+            "too many elements to permute, max = {}",
+            MAX_SIZE
+        );
+
         Permutation {
-            current: initial,
-            state: [0, 0, 0, 0, 0],
+            current: data,
+            state: [0; MAX_SIZE],
             q: 0,
+            _phantom: PhantomData,
         }
     }
 }
 
-impl Iterator for Permutation {
-    type Item = [u8; 5];
+impl<'a, T, X> Iterator for Permutation<'a, T, X>
+where
+    T: ToOwned + AsMut<[X]>,
+{
+    type Item = T::Owned;
 
-    fn next(&mut self) -> Option<[u8; 5]> {
+    fn next(&mut self) -> Option<Self::Item> {
         if self.q == 0 {
             self.q += 1;
-            Some(self.current)
+            Some(self.current.to_owned())
         } else if self.q >= 120 {
             None
         } else {
@@ -34,12 +52,12 @@ impl Iterator for Permutation {
                         self.state[i] as usize
                     };
 
-                    self.current.swap(swap, i);
+                    self.current.as_mut().swap(swap, i);
 
                     self.state[i] += 1;
                     self.q += 1;
 
-                    return Some(self.current);
+                    return Some(self.current.to_owned());
                 } else {
                     self.state[i] = 0;
                     i += 1;

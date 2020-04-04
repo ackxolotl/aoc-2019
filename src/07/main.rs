@@ -20,7 +20,8 @@ fn main() {
         .map(|x| x.parse::<i64>().unwrap())
         .collect();
 
-    let phases = Permutation::new([0, 1, 2, 3, 4]);
+    let mut data = [0, 1, 2, 3, 4];
+    let phases = Permutation::new(&mut data);
 
     let mut in_out = 0;
     let mut max_thrust = 0;
@@ -50,7 +51,8 @@ fn main() {
 
     println!("Maximum thrust: {}", max_thrust);
 
-    let phases = Permutation::new([5, 6, 7, 8, 9]);
+    let mut data = [5, 6, 7, 8, 9];
+    let phases = Permutation::new(&mut data);
 
     let mut in_out = 0;
     let mut max_thrust = 0;
