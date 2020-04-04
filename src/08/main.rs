@@ -4,14 +4,14 @@ use std::fs::File;
 use std::io::Read;
 use std::marker::PhantomData;
 
-struct SpaceImage<'a, T: 'a, X: 'a> {
+struct SpaceImage<'a, T: ?Sized, X> {
     data: &'a T,
     width: usize,
     height: usize,
     _phantom: PhantomData<X>,
 }
 
-impl<'a, T, X> SpaceImage<'a, T, X>
+impl<'a, T: ?Sized, X> SpaceImage<'a, T, X>
 where
     T: AsRef<[X]>,
 {
@@ -26,11 +26,7 @@ where
         }
     }
 
-    pub fn layers(&self) -> usize {
-        self.data.as_ref().len() / (self.width * self.height)
-    }
-
-    pub fn get_layer(&self, layer: usize) -> Option<&[X]> {
+    pub fn get_layer(&self, layer: usize) -> Option<&'a [X]> {
         if layer >= self.layers() {
             None
         } else {
@@ -39,6 +35,43 @@ where
 
             Some(&self.data.as_ref()[from..to])
         }
+    }
+
+    fn layers(&self) -> usize {
+        self.data.as_ref().len() / (self.width * self.height)
+    }
+}
+
+struct SpaceIterator<'a, T: ?Sized, X> {
+    s: &'a SpaceImage<'a, T, X>,
+    i: usize,
+}
+
+impl<'a, T: ?Sized, X> Iterator for SpaceIterator<'a, T, X>
+where
+    T: AsRef<[X]>,
+{
+    type Item = &'a [X];
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.i >= self.s.layers() {
+            None
+        } else {
+            self.i += 1;
+            Some(self.s.get_layer(self.i - 1).unwrap())
+        }
+    }
+}
+
+impl<'a, T: ?Sized, X> IntoIterator for &'a SpaceImage<'a, T, X>
+where
+    T: AsRef<[X]>,
+{
+    type Item = &'a [X];
+    type IntoIter = SpaceIterator<'a, T, X>;
+
+    fn into_iter(self) -> Self::IntoIter {
+        SpaceIterator { s: self, i: 0 }
     }
 }
 
@@ -57,46 +90,27 @@ fn main() {
 
     let s = SpaceImage::new(&data, 25, 6);
 
-    let mut zeros = (0, std::usize::MAX);
-
-    for i in 0..s.layers() {
-        let z = s.get_layer(i).unwrap().iter().filter(|x| **x == 0).count();
-
-        if z < zeros.1 {
-            zeros = (i, z);
-        }
-    }
-
-    let l = s.get_layer(zeros.0).unwrap();
+    let l = s
+        .into_iter()
+        .min_by_key(|x| x.iter().filter(|y| **y == 0).count())
+        .unwrap();
 
     let ones = l.iter().filter(|x| **x == 1).count();
     let twos = l.iter().filter(|x| **x == 2).count();
 
-    println!("1's times 2's: {}\n", ones * twos);
+    println!("'1's times '2's: {}\n", ones * twos);
 
-    let mut final_image = vec![0; 25 * 6];
+    println!("Final image:");
 
-    for (i, fin) in final_image.iter_mut().enumerate() {
-        for j in 0..s.layers() {
-            *fin = s.get_layer(j).unwrap()[i];
-
-            if *fin != 2 {
-                break;
-            }
-        }
-    }
-
-    println!("Final image: \n");
-
-    for h in 0..6 {
-        for w in 0..25 {
-            match final_image[h * 25 + w] {
-                0 => print!("\x1B[30m█"),
-                1 => print!("\x1B[0m█"),
-                _ => panic!("no color"),
-            }
+    for i in 0..(25 * 6) {
+        if i % 25 == 0 {
+            println!();
         }
 
-        println!();
+        match s.into_iter().map(|x| x[i]).find(|x| *x != 2) {
+            Some(0) => print!("\x1B[30m█"),
+            Some(1) => print!("\x1B[0m█"),
+            _ => panic!("wrong color"),
+        }
     }
 }
