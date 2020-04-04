@@ -49,9 +49,21 @@ impl Computer {
         self.memory.get(index).copied()
     }
 
+    pub fn is_running(&self) -> bool {
+        self.is_running
+    }
+
     pub fn compute(&mut self) {
         while self.is_running {
             self.step();
+        }
+    }
+
+    pub fn compute_until_read(&mut self) {
+        while self.is_running {
+            if let Instruction::Read { .. } = self.step() {
+                break;
+            }
         }
     }
 
@@ -125,7 +137,8 @@ impl Computer {
                 src2: self.fetch_operand(&modes[1], self.memory[self.ip + 2]),
                 dst: self.fetch_dst_address(&modes[2], self.memory[self.ip + 3] as usize),
             },
-            _ => Instruction::Halt,
+            99 => Instruction::Halt,
+            _ => panic!("illegal opcode"),
         }
     }
 

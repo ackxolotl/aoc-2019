@@ -20,9 +20,9 @@ impl Iterator for Permutation {
     fn next(&mut self) -> Option<[u8; 5]> {
         if self.q == 0 {
             self.q += 1;
-            return Some(self.current);
+            Some(self.current)
         } else if self.q >= 120 {
-            return None;
+            None
         } else {
             let mut i = 0;
 
