@@ -71,6 +71,16 @@ impl Computer {
         }
     }
 
+    pub fn compute_until_io(&mut self) {
+        while self.is_running {
+            match self.step() {
+                Instruction::Read { .. } => break,
+                Instruction::Write { .. } => break,
+                _ => {}
+            }
+        }
+    }
+
     fn step(&mut self) -> Instruction {
         let instruction = self.fetch_and_decode();
 
