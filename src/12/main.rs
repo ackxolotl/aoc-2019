@@ -125,14 +125,10 @@ fn cycle_length(coordinates: &[i32; 4]) -> usize {
 
         // update velocity
         for i in 0..4 {
-            v[i] += ((c[0] > c[i]) as u8
-                + (c[1] > c[i]) as u8
-                + (c[2] > c[i]) as u8
-                + (c[3] > c[i]) as u8) as i32
-                - ((c[0] < c[i]) as u8
-                    + (c[1] < c[i]) as u8
-                    + (c[2] < c[i]) as u8
-                    + (c[3] < c[i]) as u8) as i32;
+            v[i] += (c[0] - c[i]).signum()
+                + (c[1] - c[i]).signum()
+                + (c[2] - c[i]).signum()
+                + (c[3] - c[i]).signum();
         }
 
         if (v[0] | v[1] | v[2] | v[3]) == 0 && c == *coordinates {
