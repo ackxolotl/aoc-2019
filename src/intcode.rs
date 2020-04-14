@@ -1,5 +1,6 @@
 use std::collections::VecDeque;
 
+#[derive(Clone)]
 pub struct Computer {
     memory: Vec<i64>,
     ip: usize,
@@ -41,6 +42,12 @@ impl Computer {
         }
     }
 
+    pub fn from_tape(tape: &str) -> Computer {
+        let memory: Vec<i64> = tape.split(',').map(|x| x.parse::<i64>().unwrap()).collect();
+
+        Computer::new(memory)
+    }
+
     pub fn push_input(&mut self, input: i64) {
         self.input.push_back(input);
     }
@@ -49,8 +56,12 @@ impl Computer {
         self.output.pop_front()
     }
 
-    pub fn get_from_memory(&mut self, index: usize) -> Option<i64> {
+    pub fn get(&self, index: usize) -> Option<i64> {
         self.memory.get(index).copied()
+    }
+
+    pub fn set(&mut self, index: usize, val: i64) {
+        self.memory[index] = val;
     }
 
     pub fn is_running(&self) -> bool {

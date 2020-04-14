@@ -11,12 +11,9 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let tape: Vec<i64> = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
+    let computer = Computer::from_tape(&input);
 
-    let mut c = Computer::new(tape.clone());
+    let mut c = computer.clone();
 
     c.push_input(1);
 
@@ -24,7 +21,7 @@ fn main() {
 
     println!("BOOST keycode: {}", c.pop_output().unwrap());
 
-    let mut c = Computer::new(tape);
+    let mut c = computer;
 
     c.push_input(2);
 

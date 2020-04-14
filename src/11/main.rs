@@ -17,16 +17,11 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let tape: Vec<i64> = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
-
-    let painted = paint(tape.clone(), 0);
+    let painted = paint(&input, 0);
 
     println!("Painted tiles: {}", painted.iter().count());
 
-    let painted = paint(tape, 1);
+    let painted = paint(&input, 1);
 
     let x_min = painted.keys().map(|x| x.0).min().unwrap();
     let x_max = painted.keys().map(|x| x.0).max().unwrap();
@@ -45,8 +40,8 @@ fn main() {
     }
 }
 
-fn paint(tape: Vec<i64>, input: i64) -> HashMap<(i32, i32), u8> {
-    let mut c = Computer::new(tape);
+fn paint(tape: &str, input: i64) -> HashMap<(i32, i32), u8> {
+    let mut c = Computer::from_tape(tape);
 
     let mut painted: HashMap<(i32, i32), u8> = HashMap::new();
 

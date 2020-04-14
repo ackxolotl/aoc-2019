@@ -15,24 +15,21 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let tape: Vec<i64> = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
-
     let mut data = [0, 1, 2, 3, 4];
     let phases = Permutation::new(&mut data);
 
     let mut in_out = 0;
     let mut max_thrust = 0;
 
+    let computer = Computer::from_tape(&input);
+
     for phase in phases {
         let mut computers = vec![
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
+            computer.clone(),
+            computer.clone(),
+            computer.clone(),
+            computer.clone(),
+            computer.clone(),
         ];
 
         for (i, c) in computers.iter_mut().enumerate() {
@@ -59,11 +56,11 @@ fn main() {
 
     for phase in phases {
         let mut computers = vec![
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
-            Computer::new(tape.clone()),
+            computer.clone(),
+            computer.clone(),
+            computer.clone(),
+            computer.clone(),
+            computer.clone(),
         ];
 
         for (c, p) in computers.iter_mut().zip(phase.iter()) {

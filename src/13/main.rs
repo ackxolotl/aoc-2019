@@ -12,12 +12,9 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let mut tape: Vec<i64> = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
+    let computer = Computer::from_tape(&input);
 
-    let mut c = Computer::new(tape.clone());
+    let mut c = computer.clone();
 
     c.compute();
 
@@ -32,9 +29,9 @@ fn main() {
         screen.values().filter(|x| **x == 2).count()
     );
 
-    tape[0] = 2;
+    let mut c = computer;
 
-    let mut c = Computer::new(tape);
+    c.set(0, 2);
 
     let mut paddle_x = 0;
     let mut score = 0;

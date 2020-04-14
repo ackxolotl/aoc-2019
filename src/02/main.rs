@@ -11,37 +11,27 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let mut tape: Vec<i64> = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
+    let computer = Computer::from_tape(&input);
 
-    tape[1] = 12;
-    tape[2] = 2;
+    let mut c = computer.clone();
 
-    let mut computer = Computer::new(tape);
+    c.set(1, 12);
+    c.set(2, 2);
 
-    computer.compute();
+    c.compute();
 
-    println!("Output: {}", computer.get_from_memory(0).unwrap());
-
-    tape = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
+    println!("Output: {}", c.get(0).unwrap());
 
     for i in 0..=99 {
         for j in 0..=99 {
-            let mut new_tape = tape.clone();
+            let mut c = computer.clone();
 
-            new_tape[1] = i;
-            new_tape[2] = j;
+            c.set(1, i);
+            c.set(2, j);
 
-            let mut computer = Computer::new(new_tape);
+            c.compute();
 
-            computer.compute();
-
-            if computer.get_from_memory(0).unwrap() == 19_690_720 {
+            if c.get(0).unwrap() == 19_690_720 {
                 println!("Noun: {}, verb: {}, solution: {}", i, j, 100 * i + j);
                 return;
             }

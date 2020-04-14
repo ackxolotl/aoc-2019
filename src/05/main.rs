@@ -11,28 +11,25 @@ fn main() {
         .read_to_string(&mut input)
         .unwrap();
 
-    let tape: Vec<i64> = input
-        .split(',')
-        .map(|x| x.parse::<i64>().unwrap())
-        .collect();
+    let computer = Computer::from_tape(&input);
 
-    let mut computer = Computer::new(tape.clone());
+    let mut c = computer.clone();
 
-    computer.push_input(1);
+    c.push_input(1);
 
-    computer.compute();
+    c.compute();
 
-    while let Some(out) = computer.pop_output() {
+    while let Some(out) = c.pop_output() {
         println!("Output: {}", out);
     }
 
-    let mut computer = Computer::new(tape);
+    let mut c = computer;
 
-    computer.push_input(5);
+    c.push_input(5);
 
-    computer.compute();
+    c.compute();
 
-    while let Some(out) = computer.pop_output() {
+    while let Some(out) = c.pop_output() {
         println!("Output: {}", out);
     }
 }
